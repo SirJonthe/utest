@@ -12,12 +12,18 @@
 
 /// @brief Ends a user-defined unit test.
 #define UTEST_END(unit_name, must_pass) \
-}; \
-static bool run_##unit_name( void ) { return unit_name().Succeeded(); } \
-const static bool unit_name##_fn_added = utest::AddTest(run_##unit_name, __FILE__, must_pass);
+	}; \
+	static bool run_##unit_name( void ) { return unit_name().Succeeded(); } \
+	const static bool unit_name##_fn_added = utest::AddTest(run_##unit_name, __FILE__, must_pass);
 
 /// @brief Exits a unit test if the test is not true.
-#define UTEST_ASSERT(test) if (!(test)) { return; }
+#define UTEST_ASSERT(l, op, r) \
+	IncrementAssertCount(); \
+	if (!((l) op (r))) { \
+		Fail(); \
+		std::cout << "\n    >" << AssertCount() << ": <<" << l << " " << #op << " " << r << ">> is false"; \
+		return; \
+	}
 
 namespace utest
 {
@@ -32,101 +38,15 @@ namespace utest
 		bool     m_success;
 
 	protected:
-		/// @brief Asserts equality.
-		/// @tparam T1 The type of the left operand.
-		/// @tparam T2 The type of the right operand.
-		/// @param l The left operand.
-		/// @param r The right operand.
-		/// @return The result of the assertion.
-		template < typename T1, typename T2 >
-		bool Equal(const T1 &l, const T2 &r) {
-			++m_assert_count;
-			if (l != r) {
-				m_success = false;
-				std::cout << "    >" << m_assert_count << ": " << l << " == " << r << " is false\n";
-			}
-			return m_success;
-		}
+		/// @brief Increments the number of asserts performed.
+		void IncrementAssertCount( void );
 
-		/// @brief Asserts non-equality.
-		/// @tparam T1 The type of the left operand.
-		/// @tparam T2 The type of the right operand.
-		/// @param l The left operand.
-		/// @param r The right operand.
-		/// @return The result of the assertion.
-		template < typename T1, typename T2 >
-		bool NotEqual(const T1 &l, const T2 &r) {
-			++m_assert_count;
-			if (l == r) {
-				m_success = false;
-				std::cout << "    >" << m_assert_count << ": " << l << " != " << r << " is false\n";
-			}
-			return m_success;
-		}
+		/// @brief Returns the current assert count.
+		/// @return The current assert count.
+		uint64_t AssertCount( void ) const;
 
-		/// @brief Asserts that the left operand is less than the right.
-		/// @tparam T1 The type of the left operand.
-		/// @tparam T2 The type of the right operand.
-		/// @param l The left operand.
-		/// @param r The right operand.
-		/// @return The result of the assertion.
-		template < typename T1, typename T2 >
-		bool Less(const T1 &l, const T2 &r) {
-			++m_assert_count;
-			if (l >= r) {
-				m_success = false;
-				std::cout << "    >" << m_assert_count << ": " << l << " < " << r << " is false\n";
-			}
-			return m_success;
-		}
-
-		/// @brief Asserts that the left operand is greater than the right.
-		/// @tparam T1 The type of the left operand.
-		/// @tparam T2 The type of the right operand.
-		/// @param l The left operand.
-		/// @param r The right operand.
-		/// @return The result of the assertion.
-		template < typename T1, typename T2 >
-		bool Greater(const T1 &l, const T2 &r) {
-			++m_assert_count;
-			if (l <= r) {
-				m_success = false;
-				std::cout << "    >" << m_assert_count << ": " << l << " > " << r << " is false\n";
-			}
-			return m_success;
-		}
-
-		/// @brief Asserts that the left operand is less or equal to the right.
-		/// @tparam T1 The type of the left operand.
-		/// @tparam T2 The type of the right operand.
-		/// @param l The left operand.
-		/// @param r The right operand.
-		/// @return The result of the assertion.
-		template < typename T1, typename T2 >
-		bool LessOrEqual(const T1 &l, const T2 &r) {
-			++m_assert_count;
-			if (l > r) {
-				m_success = false;
-				std::cout << "    >" << m_assert_count << ": " << l << " <= " << r << " is false\n";
-			}
-			return m_success;
-		}
-
-		/// @brief Asserts that the left operand is greater or equal to the right.
-		/// @tparam T1 The type of the left operand.
-		/// @tparam T2 The type of the right operand.
-		/// @param l The left operand.
-		/// @param r The right operand.
-		/// @return The result of the assertion.
-		template < typename T1, typename T2 >
-		bool GreaterOrEqual(const T1 &l, const T2 &r) {
-			++m_assert_count;
-			if (l < r) {
-				m_success = false;
-				std::cout << "    >" << m_assert_count << ": " << l << " >= " << r << " is false\n";
-			}
-			return m_success;
-		}
+		/// @brief Fails the test. 
+		void Fail( void );
 
 	public:
 		/// @brief Initializes the test.

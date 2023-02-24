@@ -12,7 +12,22 @@ static void PrintName(const std::string &class_name)
 			++j;
 		}
 	}
-	std::cout << "\x8...\n";
+	std::cout << "\x8...";
+}
+
+void utest::UTestBase::IncrementAssertCount( void )
+{
+	++m_assert_count;
+}
+
+uint64_t utest::UTestBase::AssertCount( void ) const
+{
+	return m_assert_count;
+}
+
+void utest::UTestBase::Fail( void )
+{
+	m_success = false;
 }
 
 utest::UTestBase::UTestBase(const char *class_name, uint64_t str_len) : m_assert_count(0), m_success(true)
@@ -21,7 +36,7 @@ utest::UTestBase::UTestBase(const char *class_name, uint64_t str_len) : m_assert
 }
 utest::UTestBase::~UTestBase( void )
 {
-	std::cout << "    " << (m_success ? "ok" : "fail") << std::endl;
+	std::cout << (m_success ? "ok" : "\n    fail") << std::endl;
 }
 
 bool utest::UTestBase::Succeeded( void ) const

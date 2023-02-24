@@ -48,29 +48,21 @@ The final boolean parameter in `UTEST_END` will be covered later.
 Unit tests should be created inside an implementation file, such as `.c` and `.cpp` files. This reduces pollution and exposing internals, but also allows the user to more easily selectively compile only the tests for pure test builds, which also reduces size of the release targets.
 
 ### Asserting success:
-Asserts are templated member functions, so in some instances it may be necessary to specify what type is being comared. `Equal`, `NotEqual`, `Less`, `Greater`, `LessOrEqual`, and `GreaterOrEqual` are available to use.
+Use `UTEST_ASSERT`.
 
 ```
 #include "utest/utest.h"
 
-UTEST_BEGIN(do_soft_assert)
+UTEST_BEGIN(do_assert)
 {
-	Equal(1, 1);
+	UTEST_ASSERT(1, ==, 1)
 }
-UTEST_END(do_soft_assert, false)
+UTEST_END(do_assert, false)
 ```
 
-A failed assert does not automatically kill the execution of the test. If the user wants to abort execution the following must be done:
+Note that `UTEST_ASSERT` takes three parameters; the left-hand side value, the comparison operation, and the right-hand side value.
 
-```
-#include "utest/utest.h"
-
-UTEST_BEGIN(do_hard_assert)
-{
-	UTEST_ASSERT(Equal(1, 1))
-}
-UTEST_END(do_hard_assert, false)
-```
+A failed assert automatically kills the execution of the test.
 
 ### Preventing further execution on test failure:
 The final boolean parameter in `UTEST_END` controls whether execution of the test suite should abort if the current test fails. By setting this to true, the below test will never run the `another_test` test:
@@ -82,7 +74,7 @@ The final boolean parameter in `UTEST_END` controls whether execution of the tes
 // must_pass will always fail.
 UTEST_BEGIN(must_pass)
 {
-	UTEST_ASSERT(false)
+	UTEST_ASSERT(false, ==, true)
 }
 UTEST_END(must_pass, true)
 
