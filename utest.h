@@ -13,7 +13,7 @@
 /// @brief Ends a user-defined unit test.
 #define UTEST_END(unit_name, must_pass) \
 }; \
-bool run_##unit_name( void ) { return unit_name().Succeeded(); } \
+static bool run_##unit_name( void ) { return unit_name().Succeeded(); } \
 const static bool unit_name##_fn_added = utest::AddTest(run_##unit_name, __FILE__, must_pass);
 
 /// @brief Exits a unit test if the test is not true.
