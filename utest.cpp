@@ -2,7 +2,7 @@
 #include <string>
 #include "utest.h"
 
-void PrintName(const std::string &class_name)
+static void PrintName(const std::string &class_name)
 {
 	std::cout << "  ";
 	for (size_t i = 0, j = 0; i < class_name.size(); i = j) {
@@ -21,7 +21,7 @@ utest::UTestBase::UTestBase(const char *class_name, uint64_t str_len) : m_assert
 }
 utest::UTestBase::~UTestBase( void )
 {
-	std::cout << "    " << (m_success ? "succeeded" : "failed") << std::endl;
+	std::cout << "    " << (m_success ? "ok" : "fail") << std::endl;
 }
 
 bool utest::UTestBase::Succeeded( void ) const
@@ -92,12 +92,12 @@ struct ContextList
 	ContextItem       *last_used;
 };
 
-ContextList &Contexts( void ) {
+static ContextList &Contexts( void ) {
 	static ContextList tests;
 	return tests;
 }
 
-ContextItem *FindContext(const char *name)
+static ContextItem *FindContext(const char *name)
 {
 	ContextList &contexts = Contexts();
 	if (contexts.last_used == nullptr || contexts.last_used->context_name != name) {
@@ -113,7 +113,7 @@ ContextItem *FindContext(const char *name)
 	return contexts.last_used;
 }
 
-ContextItem *FindOrAddContext(const char *name)
+static ContextItem *FindOrAddContext(const char *name)
 {
 	ContextList &contexts = Contexts();
 	FindContext(name);
@@ -124,7 +124,7 @@ ContextItem *FindOrAddContext(const char *name)
 	return contexts.last_used;
 }
 
-bool RunTests(List<TestItem> &tests)
+static bool RunTests(List<TestItem> &tests)
 {
 	bool status = true;
 	for (auto i = tests.first; i != nullptr; i = i->next) {
@@ -136,7 +136,7 @@ bool RunTests(List<TestItem> &tests)
 	return status;
 }
 
-bool RunContext(ContextItem *c)
+static bool RunContext(ContextItem *c)
 {
 	bool status = true;
 	std::cout << c->context_name << "..." << std::endl;
@@ -146,7 +146,7 @@ bool RunContext(ContextItem *c)
 	if (c->cleanup != nullptr && !c->cleanup()) {
 		status = false;
 	}
-	std::cout << "  " << (status ? "succeeded" : "failed") << std::endl;
+	std::cout << "  " << (status ? "ok" : "fail") << std::endl;
 	return status;
 }
 
