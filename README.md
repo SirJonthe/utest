@@ -26,7 +26,7 @@ No special adjustments need to be made to build `utest`. Simply include the rele
 g++ code.cpp utest/utest.cpp
 ```
 
-...where `code.cpp` is the source file containing the user-defined unit tests as well as the entry point for the program.
+...where `code.cpp` is an example source file containing the user-defined unit tests as well as the entry point for the program.
 
 ## Examples
 ### Creating a unit test:
