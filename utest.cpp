@@ -2,19 +2,6 @@
 #include <string>
 #include "utest.h"
 
-static void PrintName(const std::string &class_name)
-{
-	std::cout << "  ";
-	for (size_t i = 0, j = 0; i < class_name.size(); i = j) {
-		j = class_name.find('_', i);
-		std::cout << class_name.substr(i, (j - i)) << " ";
-		if (j < std::string::npos) {
-			++j;
-		}
-	}
-	std::cout << "\x8...";
-}
-
 void utest::UTestBase::IncrementAssertCount( void )
 {
 	++m_assert_count;
@@ -30,14 +17,8 @@ void utest::UTestBase::Fail( void )
 	m_success = false;
 }
 
-utest::UTestBase::UTestBase(const char *class_name, uint64_t str_len) : m_assert_count(0), m_success(true)
-{
-	PrintName(std::string(class_name, str_len));
-}
-utest::UTestBase::~UTestBase( void )
-{
-	std::cout << (m_success ? "ok" : "\n    fail") << std::endl;
-}
+utest::UTestBase::UTestBase( void ) : m_assert_count(0), m_success(true)
+{}
 
 bool utest::UTestBase::Succeeded( void ) const
 {
@@ -85,20 +66,22 @@ struct List
 
 struct TestItem
 {
-	bool (*test)();
-	bool must_pass;
+	bool        (*test)();
+	std::string name;
+	bool        must_pass;
 
-	TestItem(bool (*fn)(), bool test_must_pass = false) : test(fn), must_pass(test_must_pass) {}
+	TestItem(bool (*fn)(), const char *test_name, bool test_must_pass = false) : test(fn), name(test_name), must_pass(test_must_pass) {}
 };
 
 struct ContextItem
 {
-	std::string    context_name;
+	std::string    name;
 	bool           (*init)();
 	bool           (*cleanup)();
 	List<TestItem> tests;
+	uint32_t       align_chars;
 
-	explicit ContextItem(const char *context) : context_name(context), init(nullptr), cleanup(nullptr) {}
+	explicit ContextItem(const char *context_name) : name(context_name), init(nullptr), cleanup(nullptr), align_chars(0) {}
 };
 
 struct ContextList
@@ -115,10 +98,10 @@ static ContextList &Contexts( void ) {
 static ContextItem *FindContext(const char *name)
 {
 	ContextList &contexts = Contexts();
-	if (contexts.last_used == nullptr || contexts.last_used->context_name != name) {
+	if (contexts.last_used == nullptr || contexts.last_used->name != name) {
 		Item<ContextItem> *c = contexts.list.first;
 		while (c != nullptr) {
-			if (c->data->context_name == name) {
+			if (c->data->name == name) {
 				break;
 			}
 			c = c->next;
@@ -139,13 +122,36 @@ static ContextItem *FindOrAddContext(const char *name)
 	return contexts.last_used;
 }
 
-static bool RunTests(List<TestItem> &tests)
+static void PrintTestName(const std::string &class_name, uint32_t align_chars)
+{
+	std::cout << "  ";
+	for (size_t i = 0, j = 0; i < class_name.size(); i = j) {
+		j = class_name.find('_', i);
+		std::cout << class_name.substr(i, (j - i)) << " ";
+		if (j < std::string::npos) {
+			++j;
+		}
+	}
+	std::cout << "\x8";
+	for (uint32_t i = 0; i < align_chars - class_name.size(); ++i) {
+		std::cout << ".";
+	}
+}
+
+static bool RunTests(List<TestItem> &tests, uint32_t align_chars)
 {
 	bool status = true;
 	for (auto i = tests.first; i != nullptr; i = i->next) {
+		PrintTestName(i->data->name, align_chars);
 		if (!i->data->test()) {
 			status = false;
-			if (i->data->must_pass) { break; }
+			std::cout << "\n    fail" << std::endl;
+			if (i->data->must_pass) {
+				std::cout << "  [abort]" << std::endl;
+				break;
+			}
+		} else {
+			std::cout << "ok" << std::endl;
 		}
 	}
 	return status;
@@ -154,21 +160,22 @@ static bool RunTests(List<TestItem> &tests)
 static bool RunContext(ContextItem *c)
 {
 	bool status = true;
-	std::cout << c->context_name << "..." << std::endl;
-	if ((c->init != nullptr && !c->init()) || !RunTests(c->tests)) {
+	std::cout << c->name << std::endl;
+	if ((c->init != nullptr && !c->init()) || !RunTests(c->tests, c->align_chars)) {
 		status = false;
 	}
 	if (c->cleanup != nullptr && !c->cleanup()) {
 		status = false;
 	}
-	std::cout << "  " << (status ? "ok" : "fail") << std::endl;
+	std::cout << "  " << (status ? "[ok]" : "[fail]") << std::endl;
 	return status;
 }
 
-bool utest::AddTest(bool (*fn)(), const char *context, bool test_must_pass)
+bool utest::AddTest(bool (*fn)(), const char *name, const char *context, bool test_must_pass)
 {
 	ContextItem *c = FindOrAddContext(context);
-	c->tests.Add(new TestItem(fn, test_must_pass));
+	c->tests.Add(new TestItem(fn, name, test_must_pass));
+	c->align_chars = c->align_chars > uint32_t(c->tests.last->data->name.size()) + 3 ? c->align_chars : uint32_t(c->tests.last->data->name.size()) + 3;
 	return true;
 }
 

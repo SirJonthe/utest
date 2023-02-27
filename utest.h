@@ -5,16 +5,16 @@
 #include <iostream>
 
 /// @brief Begins the definition of a user-defined unit test.
-#define UTEST_BEGIN(unit_name) \
-	class unit_name : public utest::UTestBase { \
+#define UTEST_BEGIN(unit_class) \
+	class unit_class : public utest::UTestBase { \
 	public: \
-		unit_name( void ) : UTestBase(#unit_name, sizeof(#unit_name))
+		unit_class( void ) : UTestBase()
 
 /// @brief Ends a user-defined unit test.
-#define UTEST_END(unit_name, must_pass) \
+#define UTEST_END(unit_class, must_pass) \
 	}; \
-	static bool run_##unit_name( void ) { return unit_name().Succeeded(); } \
-	const static bool unit_name##_fn_added = utest::AddTest(run_##unit_name, __FILE__, must_pass);
+	static bool run_##unit_class( void ) { return unit_class().Succeeded(); } \
+	const static bool unit_class##_fn_added = utest::AddTest(run_##unit_class, #unit_class, __FILE__, must_pass);
 
 /// @brief Exits a unit test if the test is not true.
 #define UTEST_ASSERT(l, op, r) \
@@ -49,13 +49,8 @@ namespace utest
 		void Fail( void );
 
 	public:
-		/// @brief Initializes the test.
-		/// @param class_name The name of the derived class being run.
-		/// @param str_len The length of the input string.
-		UTestBase(const char *class_name, uint64_t str_len);
-		
-		/// @brief Cleans up the test.
-		~UTestBase( void );
+		/// @brief Default constructor. 
+		UTestBase( void );
 
 		/// @brief  Checks for success.
 		/// @return True if the test succeeded.
@@ -84,13 +79,14 @@ namespace utest
 
 	/// @brief Adds a test to the suite.
 	/// @param fn The function pointer to the wrapper running the test.
+	/// @param name The name of the test.
 	/// @param context An identifier to group the test together with other tests. UTEST_END automatically uses the current filename as context.
 	/// @param test_must_pass Controls whether the test must pass for the execution of the test suite to proceed.
 	/// @return Always returns TRUE.
 	/// @note Do not use this function directly. See instead UTEST_BEGIN and UTEST_END.
 	/// @sa UTEST_BEGIN
 	/// @sa UTEST_END
-	bool AddTest(bool (*fn)(), const char *context, bool test_must_pass);
+	bool AddTest(bool (*fn)(), const char *name, const char *context, bool test_must_pass);
 
 	/// @brief Runs all tests defined using UTEST_BEGIN and UTEST_END.
 	/// @return The return code of the execution. 0 for all-good, 1 for some failure.

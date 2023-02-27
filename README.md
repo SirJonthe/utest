@@ -20,10 +20,10 @@ In order to create a unit test, the user needs to make use of two macros; `UTEST
 `Run` runs all user-defined unit tests, assuming they have been created correctly.
 
 ## Building
-No special adjustments need to be made to build `utest`. Simply include the relevant headers in your code and make sure the headers and source files are available in your compiler search paths. Using `g++` as an example, building is no harder than:
+No special adjustments need to be made to build `utest` except enabling C++11 compatibility or above. Simply include the relevant headers in your code and make sure the headers and source files are available in your compiler search paths. Using `g++` as an example, building is no harder than:
 
 ```
-g++ code.cpp utest/utest.cpp
+g++ -std=c++11 code.cpp utest/utest.cpp
 ```
 
 ...where `code.cpp` is an example source file containing the user-defined unit tests as well as the entry point for the program.
