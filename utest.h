@@ -5,18 +5,27 @@
 #include <iostream>
 
 /// @brief Begins the definition of a user-defined unit test.
+/// @param unit_class The class name of the unit test. Be descriptive as this will be the basis for the description of the test.
+/// @note Use camel case for unit_class class name for automatic description formatting.
+/// @sa UTEST_END
 #define UTEST_BEGIN(unit_class) \
 	class unit_class : public utest::UTestBase { \
 	public: \
 		unit_class( void ) : UTestBase()
 
 /// @brief Ends a user-defined unit test.
+/// @param unit_class The same class name used when beginning to define the test using UTEST_BEGIN.
+/// @param must_pass If true, halts further tests from running within this context when this test fails.
+/// @sa UTEST_BEGIN
 #define UTEST_END(unit_class, must_pass) \
 	}; \
 	static bool run_##unit_class( void ) { return unit_class().Succeeded(); } \
 	const static bool unit_class##_fn_added = utest::AddTest(run_##unit_class, #unit_class, __FILE__, must_pass);
 
 /// @brief Exits a unit test if the test is not true.
+/// @param l The left operand.
+/// @param op The comparison operator (or any other operator that will yeild a boolean expression).
+/// @param r The right operand.
 #define UTEST_ASSERT(l, op, r) \
 	IncrementAssertCount(); \
 	if (!((l) op (r))) { \
