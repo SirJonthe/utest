@@ -30,7 +30,7 @@
 	IncrementAssertCount(); \
 	if (!((l) op (r))) { \
 		Fail(); \
-		std::cout << "\n    >" << AssertCount() << ": <<" << (l) << " " << #op << " " << (r) << ">> is false"; \
+		std::cout << "\n    #" << AssertCount() << " @" << __LINE__ << ": <<" << (l) << " " << #op << " " << (r) << ">> is false"; \
 		return; \
 	}
 
