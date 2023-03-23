@@ -136,6 +136,7 @@ static void PrintTestName(const std::string &class_name, uint32_t align_chars)
 	for (uint32_t i = 0; i < align_chars - class_name.size(); ++i) {
 		std::cout << ".";
 	}
+	std::cout << std::flush;
 }
 
 static bool RunTests(List<TestItem> &tests, uint32_t align_chars)
