@@ -72,20 +72,6 @@ namespace utest
 		bool Failed( void ) const;
 	};
 
-	/// @brief 
-	/// @param fn 
-	/// @param context
-	/// @return Always returns TRUE.
-	/// @note Do not use this function directly. See instead UTEST_BEGIN and UTEST_END.
-	bool AddContextInit(bool (*fn), const char *context);
-
-	/// @brief 
-	/// @param fn 
-	/// @param context
-	/// @return Always returns TRUE.
-	/// @note Do not use this function directly. See instead UTEST_BEGIN and UTEST_END.
-	bool AddContextCleanup(bool (*fn)(), const char *context);
-
 	/// @brief Adds a test to the suite.
 	/// @param fn The function pointer to the wrapper running the test.
 	/// @param name The name of the test.
