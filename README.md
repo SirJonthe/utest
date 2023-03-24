@@ -1,6 +1,6 @@
 # utest
 ## Copyright
-Copyright Jonathan Karlsson, 2023
+Public domain, 2023
 
 github.com/SirJonthe
 
@@ -14,7 +14,7 @@ github.com/SirJonthe
 `utest` provides only a few contact points for the programmer to use. Once unit tests are correctly defined using the provided library functionality the tests are automatically run when the user calls a single `Run` function.
 
 ## Macros
-In order to create a unit test, the user needs to make use of two macros; `UTEST_BEGIN(unit_test_name)` and `UTEST_END(unit_test_name, must_pass)`. These macros add boilerplate code which sets up the unit test as well as ensures that the unit test is automatically added to the list of unit tests to be run when calling `Run`. When naming unit tests, use snake case to describe the test as `utest` automatically detects the wording.
+In order to create a unit test, the user needs to make use of two macros; `CC0_UTEST_BEGIN(unit_test_name)` and `CC0_UTEST_END(unit_test_name, must_pass)`. These macros add boilerplate code which sets up the unit test as well as ensures that the unit test is automatically added to the list of unit tests to be run when calling `Run`. When naming unit tests, use snake case to describe the test as `utest` automatically detects the wording.
 
 ## Functions
 `Run` runs all user-defined unit tests, assuming they have been created correctly.
@@ -36,54 +36,54 @@ Creating a unit test is as easy as using two macros inside an implementation fil
 #include <iostream>
 #include "utest/utest.h"
 
-UTEST_BEGIN(hello_utest)
+CC0_UTEST_BEGIN(hello_utest)
 {
 	std::cout << "Hello, utest!" << std::endl;
 }
-UTEST_END(hello_utest, false)
+CC0_UTEST_END(hello_utest, false)
 ```
 
-The final boolean parameter in `UTEST_END` will be covered later.
+The final boolean parameter in `CC0_UTEST_END` will be covered later.
 
 Unit tests should be created inside an implementation file, such as `.c` and `.cpp` files. This reduces pollution and exposing internals, but also allows the user to more easily selectively compile only the tests for pure test builds, which also reduces size of the release targets.
 
 ### Asserting success:
-Use `UTEST_ASSERT`.
+Use `CC0_UTEST_ASSERT`.
 
 ```
 #include "utest/utest.h"
 
-UTEST_BEGIN(do_assert)
+CC0_UTEST_BEGIN(do_assert)
 {
-	UTEST_ASSERT(1, ==, 1)
+	CC0_UTEST_ASSERT(1, ==, 1)
 }
-UTEST_END(do_assert, false)
+CC0_UTEST_END(do_assert, false)
 ```
 
-Note that `UTEST_ASSERT` takes three parameters; the left-hand side value, the comparison operation, and the right-hand side value.
+Note that `CC0_UTEST_ASSERT` takes three parameters; the left-hand side value, the comparison operation, and the right-hand side value.
 
 A failed assert automatically kills the execution of the test.
 
 ### Preventing further execution on test failure:
-The final boolean parameter in `UTEST_END` controls whether execution of the test suite should abort if the current test fails. By setting this to true, the below test will never run the `another_test` test:
+The final boolean parameter in `CC0_UTEST_END` controls whether execution of the test suite should abort if the current test fails. By setting this to true, the below test will never run the `another_test` test:
 
 ```
 #include <iostream>
 #include "utest/utest.h"
 
 // must_pass will always fail.
-UTEST_BEGIN(must_pass)
+CC0_UTEST_BEGIN(must_pass)
 {
-	UTEST_ASSERT(false, ==, true)
+	CC0_UTEST_ASSERT(false, ==, true)
 }
-UTEST_END(must_pass, true)
+CC0_UTEST_END(must_pass, true)
 
 // This test will never run, since must_pass will always fail.
-UTEST_BEGIN(another_test)
+CC0_UTEST_BEGIN(another_test)
 {
 	std::cout << ":(" << std::endl;
 }
-UTEST_END(another_test, false)
+CC0_UTEST_END(another_test, false)
 ```
 
 Tests execute in the order of occurrence in-code and test that must pass will only prevent tests defined within the same file as itself from running.
@@ -109,27 +109,27 @@ test1.cpp
 ```
 #include "utest/utest.h"
 
-UTEST_BEGIN(test1)
+CC0_UTEST_BEGIN(test1)
 {}
-UTEST_END(test1, false)
+CC0_UTEST_END(test1, false)
 ```
 
 test2.cpp
 ```
 #include "utest/utest.h"
 
-UTEST_BEGIN(test2)
+CC0_UTEST_BEGIN(test2)
 {}
-UTEST_END(test2, false)
+CC0_UTEST_END(test2, false)
 ```
 
 test3.cpp
 ```
 #include "utest/utest.h"
 
-UTEST_BEGIN(test3)
+CC0_UTEST_BEGIN(test3)
 {}
-UTEST_END(test3, false)
+CC0_UTEST_END(test3, false)
 ```
 
 main.cpp
@@ -159,25 +159,25 @@ int *fixture_values = nullptr;
 int fixture_value_count = 0;
 
 // Context setup.
-UTEST_BEGIN(context_setup)
+CC0_UTEST_BEGIN(context_setup)
 	fixture_value_count = 0;
 	delete [] fixture_values;
 	fixture_values = new int[fixture_value_count];
 	for (int i = 0; i < fixture_value_count; ++i) {
 		fixture_values[i] = i;
 	}
-UTEST_END(context_setup, true)
+CC0_UTEST_END(context_setup, true)
 
 // Tests go between the setup and cleanup.
-UTEST_BEGIN(use_global_context)
-UTEST_END(use_global_context, false)
+CC0_UTEST_BEGIN(use_global_context)
+CC0_UTEST_END(use_global_context, false)
 
 // Context cleanup
-UTEST_BEGIN(context_cleanup)
+CC0_UTEST_BEGIN(context_cleanup)
 	delete [] fixture_values;
 	fixture_values = nullptr;
 	fixture_value_count = 0;
-UTEST_END(context_cleanup, true)
+CC0_UTEST_END(context_cleanup, true)
 ```
 
 The drawback of this approach is that there will be useless memory on the stack in the form of global variables past the lifetime of the tests in the context. There is also a drawback that if any of the tests inside the context fails when they must pass, then the context cleanup procedure will not run, leaving the global memory allocated past its lifetime. This is another good reason not to compile the tests together with the release binary, but instead build a test binary and a release binary separately. There are plans to address these shortcomings at a later time.

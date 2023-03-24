@@ -2,30 +2,30 @@
 #include <string>
 #include "utest.h"
 
-void utest::UTestBase::IncrementAssertCount( void )
+void cc0::utest::UTestBase::IncrementAssertCount( void )
 {
 	++m_assert_count;
 }
 
-uint64_t utest::UTestBase::AssertCount( void ) const
+uint64_t cc0::utest::UTestBase::AssertCount( void ) const
 {
 	return m_assert_count;
 }
 
-void utest::UTestBase::Fail( void )
+void cc0::utest::UTestBase::Fail( void )
 {
 	m_success = false;
 }
 
-utest::UTestBase::UTestBase( void ) : m_assert_count(0), m_success(true)
+cc0::utest::UTestBase::UTestBase( void ) : m_assert_count(0), m_success(true)
 {}
 
-bool utest::UTestBase::Succeeded( void ) const
+bool cc0::utest::UTestBase::Succeeded( void ) const
 {
 	return m_success;
 }
 
-bool utest::UTestBase::Failed( void ) const
+bool cc0::utest::UTestBase::Failed( void ) const
 {
 	return !m_success;
 }
@@ -172,7 +172,7 @@ static bool RunContext(ContextItem *c)
 	return status;
 }
 
-bool utest::AddTest(bool (*fn)(), const char *name, const char *context, bool test_must_pass)
+bool cc0::utest::AddTest(bool (*fn)(), const char *name, const char *context, bool test_must_pass)
 {
 	ContextItem *c = FindOrAddContext(context);
 	c->tests.Add(new TestItem(fn, name, test_must_pass));
@@ -180,7 +180,7 @@ bool utest::AddTest(bool (*fn)(), const char *name, const char *context, bool te
 	return true;
 }
 
-int utest::Run( void )
+int cc0::utest::Run( void )
 {
 	bool status = true;
 	for (auto c = Contexts().list.first; c != nullptr; c = c->next) {
@@ -191,7 +191,7 @@ int utest::Run( void )
 	return status ? 0 : 1;
 }
 
-int utest::Run(const char **contexts, uint32_t count)
+int cc0::utest::Run(const char **contexts, uint32_t count)
 {
 	bool status = true;
 	for (uint32_t c = 0; c < count; ++c) {
