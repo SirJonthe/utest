@@ -11,7 +11,7 @@ github.com/SirJonthe
 `utest` is designed to be as minimalist as possible while still achieving the goal of being a handy tool to do unit testing with. 
 
 ## Usage
-`utest` provides only a few contact points for the programmer to use. Once a unit tests are correctly defined using the provided library functionality the tests are automatically run when the user calls a single `Run` function.
+`utest` provides only a few contact points for the programmer to use. Once unit tests are correctly defined using the provided library functionality the tests are automatically run when the user calls a single `Run` function.
 
 ## Macros
 In order to create a unit test, the user needs to make use of two macros; `UTEST_BEGIN(unit_test_name)` and `UTEST_END(unit_test_name, must_pass)`. These macros add boilerplate code which sets up the unit test as well as ensures that the unit test is automatically added to the list of unit tests to be run when calling `Run`. When naming unit tests, use snake case to describe the test as `utest` automatically detects the wording.
@@ -83,7 +83,7 @@ UTEST_BEGIN(another_test)
 {
 	std::cout << ":(" << std::endl;
 }
-UTEST_END(another_test)
+UTEST_END(another_test, false)
 ```
 
 Tests execute in the order of occurrence in-code and test that must pass will only prevent tests defined within the same file as itself from running.
@@ -149,7 +149,6 @@ int main(int, char**)
 The above code will run only tests inside `test1.cpp` and `test3.cpp` despite the tests inside `test2.cpp` also being defined and loaded up inside the `utest` framework.
 
 ### Contexts
-
 `utest` does not have direct support for contexts, but can be used to implement them none the less via standard unit tests.
 
 ```
