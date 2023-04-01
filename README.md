@@ -5,7 +5,7 @@ Public domain, 2023
 github.com/SirJonthe
 
 ## About
-`utest` is a minimalist unit testing framework for C++.
+`utest` is a minimalist unit testing framework for C++11.
 
 ## Design
 `utest` is designed to be as minimalist as possible while still achieving the goal of being a handy tool to do unit testing with. 
