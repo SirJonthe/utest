@@ -1,4 +1,5 @@
-/// @file
+/// @file utest.cpp
+/// @brief Contains a minimalist unit testing framework.
 /// @author github.com/SirJonthe
 /// @date 2023
 /// @copyright Public domain.
