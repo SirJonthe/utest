@@ -203,7 +203,12 @@ int cc0::utest::Run(const char **contexts, uint32_t count)
 	bool status = true;
 	for (uint32_t c = 0; c < count; ++c) {
 		FindContext(contexts[c]);
-		if (Contexts().last_used != nullptr && !RunContext(Contexts().last_used)) {
+		if (Contexts().last_used != nullptr) {
+			if (!RunContext(Contexts().last_used)) {
+				status = false;
+			}
+		} else {
+			std::cout << contexts[c] << "...not found" << std::endl;
 			status = false;
 		}
 	}
